@@ -7,6 +7,7 @@ namespace User\Application\Commands;
 use Shared\Domain\ValueObjects\CityName;
 use Shared\Domain\ValueObjects\CountryCode;
 use Shared\Domain\ValueObjects\Ip;
+use Shared\Domain\ValueObjects\WalletAddress;
 use Shared\Infrastructure\CommandBus\Attributes\Handler;
 use User\Application\CommandHandlers\CreateUserCommandHandler;
 use User\Domain\ValueObjects\Email;
@@ -26,6 +27,7 @@ class CreateUserCommand
     public ?Password $password = null;
     public ?Language $language = null;
     public ?Ip $ip = null;
+    public ?WalletAddress $walletAddress = null;
     public ?CountryCode $countryCode = null;
     public ?CityName $cityName = null;
 
@@ -45,6 +47,7 @@ class CreateUserCommand
     public function setPassword(?string $password): self
     {
         $this->password = new Password($password);
+
         return $this;
     }
 
@@ -57,6 +60,12 @@ class CreateUserCommand
     public function setIp(?string $ip): self
     {
         $this->ip = new Ip($ip);
+        return $this;
+    }
+
+    public function setWalletAddress(?string $walletAddress): self
+    {
+        $this->walletAddress = new WalletAddress($walletAddress);
         return $this;
     }
 

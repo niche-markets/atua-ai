@@ -1,6 +1,6 @@
 <header class="flex items-center justify-between mt-4">
   <div>
-    <a href="app">
+    <a href="/">
       <img src="{{ option.brand.logo_dark ?? '/assets/logo-light.svg' }}"
         alt="{{ option.site.name ?? 'Logo'  }}"
         class="hidden group-data-[mode=dark]/html:block max-w-[140px]">
@@ -20,6 +20,12 @@
         <i class="ti ti-sun hidden group-data-[mode=dark]/html:block"></i>
       </button>
     </mode-switcher>
+    <div id="btn-connect-2"
+      class="h-8 px-2 text-sm button button-sm whitespace-nowrap sm:text-base sm:h-10 sm:px-4"
+      style="background-color:#0c0041; color: #fff;">
+      Wallet Connet
+    </div>
+
     {% endif %}
 
     {% if user is defined %}
@@ -144,12 +150,12 @@
     <div class="relative flex items-center group"
       @click.outside="$refs.locale.removeAttribute('data-open')">
 
-      <button
+      {# <button
         class="flex items-center justify-center w-10 h-10 text-2xl rounded-full bg-intermediate hover:bg-accent hover:text-accent-content"
         @click="$refs.locale.hasAttribute('data-open') ? $refs.locale.removeAttribute('data-open') : $refs.locale.setAttribute('data-open', '')"
         aria-label="Language selector">
         <i class="ti ti-world"></i>
-      </button>
+      </button> #}
 
       <div class="w-auto menu"
         @click="$refs.locale.removeAttribute('data-open')" x-ref="locale">

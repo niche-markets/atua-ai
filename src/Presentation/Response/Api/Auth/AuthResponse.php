@@ -12,13 +12,13 @@ use User\Domain\ValueObjects\Role;
 
 class AuthResponse extends JsonResponse
 {
-    public function __construct(UserEntity $user)
+    public function __construct(UserEntity $user, $extra = array())
     {
         $jwt = new UserJwt((string) $user->getId()->getValue(), $user->getRole() === Role::ADMIN);
         $tokenString = $jwt->getJwtString();
         $cookie = new UserCookie($tokenString);
-
-        $data = ['jwt' =>  $tokenString];
+        $qwe = array('jwt' =>  $tokenString, 'workid' => (string) $user->getCurrentWorkspace()->getId()->getValue());
+        $data = array_merge($qwe, $extra);
         $headers = ['Set-Cookie' => $cookie->toHeaderValue()];
 
         parent::__construct(

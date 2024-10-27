@@ -1,0 +1,22 @@
+{% extends "/layouts/base.twig" %}
+
+{% block layout %}
+<div class="px-4 container">
+
+  <div
+    class="flex flex-col px-2 lg:pt-7 md:min-h-screen grow group-data-[mobile-menu]/html:hidden lg:group-data-[mobile-menu]/html:flex w-full mx-auto {{ wide_layout is defined ? 'max-w-6xl' : 'max-w-6xl' }}">
+    {% include "sections/header.twig" %}
+    <main class="flex flex-col gap-5 grow md:gap-10">
+      {% block template %}{% endblock %}
+    </main>
+
+    {% block footer %}
+    {% include "/sections/footer2.twig" %}
+    {% endblock %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="assets/app.js?v={{ version }}"></script>
+{% endblock %}

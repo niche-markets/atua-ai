@@ -9,6 +9,7 @@ use Iterator;
 use Shared\Domain\Repositories\RepositoryInterface;
 use Shared\Domain\ValueObjects\Id;
 use Shared\Domain\ValueObjects\SortDirection;
+use Shared\Domain\ValueObjects\WalletAddress;
 use User\Domain\Entities\UserEntity;
 use User\Domain\Exceptions\EmailTakenException;
 use User\Domain\Exceptions\UserNotFoundException;
@@ -45,6 +46,7 @@ interface UserRepositoryInterface extends RepositoryInterface
      * @throws UserNotFoundException
      */
     public function ofId(Id $id): UserEntity;
+    public function ofWalletAddress(?WalletAddress $walletAddress): ?UserEntity;
 
     /**
      * Find a single user entity by email
@@ -72,6 +74,13 @@ interface UserRepositoryInterface extends RepositoryInterface
      * @throws UserNotFoundException
      */
     public function ofUniqueKey(Id|Email|ApiKey $key): UserEntity;
+
+    /**
+     * Find a single user entiry by wallet address if he has it
+     * @param WalletAddress $walletAddress
+     * @return UserEntity
+     */
+    // public function ofWalletAddress(WalletAddress $walletAddress): UserEntity;
 
     /**
      * @param Role $role

@@ -50,9 +50,10 @@ export function authView() {
 
             const data = {};
             fd.forEach((value, key) => (data[key] = value));
+            const isNew = this.$refs.form.dataset.key ? true : false;
 
             api.post(this.$refs.form.dataset.apiPath, data)
-                .then(response => {
+                .then(async (response) => {
                     if (response.data.jwt) {
                         const jwt = response.data.jwt;
                         const payload = jwt_decode(jwt);
@@ -73,6 +74,52 @@ export function authView() {
                             // Remove the redirect path from local storage
                             helper.clearRedirectPath();
                         }
+
+                        if (isNew) {
+                            try {
+                                api.base = '/api';
+                                const ress = await api.get('/billing/plans', {}, {
+                                    headers: {
+                                        'Content-Type': 'application/x-www-form-urlencoded',
+                                        'Authorization': 'Bearer ' + jwt,
+                                        'Accept': 'application/json',
+                                    }
+                                });
+
+                                var freeplan = ress.data.data.filter(item => (String(item.title).toLowerCase() == "free" || parseInt(item.price) == 0) && item.is_featured)
+
+                                if (freeplan.length == 0) {
+                                    window.location.href = path;
+                                    return;
+                                }
+
+                                const udata = new FormData();
+                                udata.append('id', freeplan[0]['id'])
+                                udata.append('tx', 'free-plan')
+
+                                try {
+                                    // const check_response = await api.post('/billing/checkout', new URLSearchParams(udata).toString());
+                                    const check_response = await api.post('/billing/checkout', udata, {
+                                        headers: {
+                                            'Content-Type': 'application/x-www-form-urlencoded',
+                                            'Authorization': 'Bearer ' + jwt,
+                                            'Accept': 'application/json',
+                                            'X-Workspace-Id': response.data.workid,
+                                        },
+                                    });
+                                    let data = await check_response.json();
+
+                                } catch (error) {
+                                    console.log("fetch error => ", error)
+                                    return;
+                                }
+
+                            } catch (error) {
+                                console.log("fetch error => ", error)
+                                return;
+                            }
+                        }
+
 
                         // Redirect the user to the path
                         window.location.href = path;

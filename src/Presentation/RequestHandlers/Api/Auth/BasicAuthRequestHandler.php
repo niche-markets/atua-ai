@@ -41,7 +41,7 @@ class BasicAuthRequestHandler extends AuthApi implements
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->validateRequest($request);
+        // $this->validateRequest($request);
         $payload = (object) $request->getParsedBody();
 
         $cmd = new BasicAuthCommand(

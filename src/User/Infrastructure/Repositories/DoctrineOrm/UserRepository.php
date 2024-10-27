@@ -17,6 +17,7 @@ use Override;
 use RuntimeException;
 use Shared\Domain\ValueObjects\Id;
 use Shared\Domain\ValueObjects\SortDirection;
+use Shared\Domain\ValueObjects\WalletAddress;
 use Shared\Infrastructure\Repositories\DoctrineOrm\AbstractRepository;
 use User\Domain\Entities\UserEntity;
 use User\Domain\Exceptions\EmailTakenException;
@@ -92,6 +93,30 @@ class UserRepository extends AbstractRepository implements
             throw new DomainException('More than one result found');
         }
 
+        return $object;
+    }
+
+    #[Override]
+    public function ofWalletAddress(?WalletAddress $walletAddress): ?UserEntity
+    {
+        try {
+            if ($walletAddress === null || $walletAddress->value === null) {
+                return null;
+            }
+        
+            $object = $this->query()
+                ->select('user')
+                ->where(self::ALIAS . '.walletAddress.value = :walletAddress')
+                ->setParameter(':walletAddress', $walletAddress->value)
+                ->getQuery()
+                ->getSingleResult();
+        
+        } catch (NoResultException $e) {
+            return null;
+        } catch (NonUniqueResultException $e) {
+            throw new DomainException('More than one result found');
+        }
+    
         return $object;
     }
 

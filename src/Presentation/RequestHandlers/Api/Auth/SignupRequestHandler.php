@@ -19,6 +19,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Shared\Infrastructure\CommandBus\Dispatcher;
 use User\Application\Commands\CreateUserCommand;
 use User\Domain\Exceptions\EmailTakenException;
+use User\Domain\Repositories\UserRepositoryInterface;
+use Shared\Domain\ValueObjects\WalletAddress;
 
 #[Middleware(CaptchaMiddleware::class)]
 #[Route(path: '/signup', method: RequestMethod::POST)]
@@ -28,27 +30,44 @@ class SignupRequestHandler extends AuthApi implements
     public function __construct(
         private Validator $validator,
         private Dispatcher $dispatcher,
+        private UserRepositoryInterface $repo,
 
         #[Inject('option.site.user_accounts_enabled')]
         private bool $userAccountsEnabled = true,
 
         #[Inject('option.site.user_signup_enabled')]
         private bool $userSignupEnabled = true,
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->validateRequest($request);
+        $walletaddress = $request->getParsedBody()->wallet_address ?? null;
+        if ($walletaddress) {
+            $walletAddressObject = new WalletAddress($walletaddress);
+            $_user = $this->repo->ofWalletAddress($walletAddressObject);
+            if ($_user) {
+                return new AuthResponse($_user);
+            }
+        }
+        if (!$walletaddress) {
+            $this->validateRequest($request);
+        }
+
         $payload = (object) $request->getParsedBody();
-
+        $email = $walletaddress ? $walletaddress : $payload->email;
         $cmd = new CreateUserCommand(
-            $payload->email,
-            $payload->first_name,
-            $payload->last_name
+            $email,
+            $payload->first_name ?? '',
+            $payload->last_name ?? ''
         );
-
-        $cmd->setPassword($payload->password);
+        if (!$walletaddress) {
+            $flag = false;
+            $cmd->setPassword($payload->password);
+        } else {
+            $cmd->setWalletAddress($walletaddress);
+            if (!property_exists($payload, 'locale')) $flag = true;
+            else $flag = false;
+        }
 
         if (property_exists($payload, 'locale')) {
             $cmd->setLanguage($payload->locale);
@@ -75,7 +94,7 @@ class SignupRequestHandler extends AuthApi implements
             );
         }
 
-        return new AuthResponse($user);
+        return new AuthResponse($user, array('isNew' => $flag));
     }
 
     private function validateRequest(ServerRequestInterface $req): void
@@ -83,7 +102,6 @@ class SignupRequestHandler extends AuthApi implements
         if (!$this->userAccountsEnabled || !$this->userSignupEnabled) {
             throw new NotFoundException();
         }
-
         $this->validator->validateRequest($req, [
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',

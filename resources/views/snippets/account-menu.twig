@@ -5,8 +5,10 @@
 
   <div
     class="left-0 top-auto right-auto mb-1 text-base w-60 bottom-full menu max-h-max peer"
+    style="border:1px solid #333;"
     x-ref="usermenu" @click="$el.removeAttribute('data-open')">
 
+    {% if not user.wallet_address %}
     <a href="app/account"
       class="flex items-center w-full gap-3 p-4 text-left hover:bg-intermediate hover:text-intermediate-content">
       {{ avatar("`" ~ user.first_name ~ " " ~ user.last_name ~ "`", "`" ~ user.avatar ?? null ~ "`") }}
@@ -19,12 +21,24 @@
 
         <div
           class="mt-1 overflow-hidden text-sm text-content-dimmed text-ellipsis">
-          {{ user.email }}</div>
+          {{ user.email }}
+        </div>
       </div>
     </a>
-
-    <hr class="border-t border-line-dimmed">
+    {% else %}
+    {# <div
+      class="flex flex-col items-center justify-center w-full gap-3 p-4 text-left hover:bg-intermediate hover:text-intermediate-content overflow-hidden font-bold">
+      <div class="w-full flex items-center justify-cneter font-normal overflow-hidden text-sm text-content-dimmed">
+      <div id = 'btn-open-web3modal' class="w-full text-center"></div>
+      </div>
+    </div> #}
+    {% endif %}
     <ul>
+      <li>
+        <div class='flex items-center gap-2 px-4 py-2 hover:bg-intermediate hover:text-intermediate-content'>
+          <div id = 'btn-open-web3modal' class="w-full text-center"></div>
+        </div>
+      <li>
       {% if user.role == 'admin' %}
       {% if view_namespace == 'admin' %}
       <li>
@@ -67,7 +81,6 @@
       {% endif %}
     </ul>
 
-    <hr class="border-t border-line-dimmed">
 
     <ul>
       <li>
@@ -80,16 +93,22 @@
       </li>
 
       <li>
+        {% if not user.wallet_address %}
         <a href="logout"
           class="flex items-center gap-2 px-4 py-2 hover:bg-intermediate hover:text-intermediate-content">
           <i class="ti ti-logout"></i>
 
           {{ p__('button', 'Logout') }}
         </a>
+        {% else %}
+        <div class='w-full flex items-center justify-start gap-2 px-4 py-2 hover:bg-intermediate hover:text-intermediate-content '>
+        <i class="ti ti-logout flex grow-0"></i>
+        <div class="flex grow" id='btn-logout'></div>
+        </div>
+        {% endif %}
       </li>
     </ul>
 
-    <hr class="border-t border-line-dimmed">
 
     <ul class="flex flex-col gap-2 px-4 py-2 text-xs text-content-dimmed">
       {% if user.role == 'admin' %}

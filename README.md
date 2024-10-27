@@ -1,5 +1,5 @@
-# ATUA AI - AI Powered Content Blockchain Platform
+# AIKEEDO - AI Powered Content Platform
 
-## Site
-Site is available at https://atua.ai
+## Documentation
 
+Documentation is availabe at https://docs.aikeedo.com

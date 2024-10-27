@@ -16,6 +16,7 @@ use Shared\Domain\ValueObjects\CityName;
 use Shared\Domain\ValueObjects\CountryCode;
 use Shared\Domain\ValueObjects\Id;
 use Shared\Domain\ValueObjects\Ip;
+use Shared\Domain\ValueObjects\WalletAddress;
 use Traversable;
 use User\Domain\Exceptions\InvalidPasswordException;
 use User\Domain\Exceptions\InvalidTokenException;
@@ -50,7 +51,7 @@ class UserEntity
     private Role $role;
 
     /** The email of the user entity */
-    #[ORM\Embedded(class: Email::class, columnPrefix: false)]
+    #[ORM\Embedded(class: Email::class, columnPrefix: false,)]
     private Email $email;
 
     /** Password hash of the user */
@@ -74,6 +75,9 @@ class UserEntity
 
     #[ORM\Embedded(class: Ip::class, columnPrefix: false)]
     private Ip $ip;
+
+    #[ORM\Embedded(class: WalletAddress::class, columnPrefix: false)]
+    private WalletAddress $walletAddress;
 
     #[ORM\Column(type: Types::STRING, enumType: CountryCode::class, name: 'country_code', nullable: true)]
     private ?CountryCode $countryCode = null;
@@ -208,9 +212,20 @@ class UserEntity
         return $this->ip;
     }
 
+    public function getWalletAddress(): WalletAddress
+    {
+        return $this->walletAddress;
+    }
+
     public function setIp(Ip $ip): self
     {
         $this->ip = $ip;
+        return $this;
+    }
+
+    public function setWalletAddress(WalletAddress $walletAddress): self
+    {
+        $this->walletAddress = $walletAddress;
         return $this;
     }
 

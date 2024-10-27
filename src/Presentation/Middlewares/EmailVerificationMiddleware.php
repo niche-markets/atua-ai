@@ -29,7 +29,8 @@ class EmailVerificationMiddleware implements MiddlewareInterface
         /** @var UserEntity $user */
         $user = $request->getAttribute(UserEntity::class);
         $path = $request->getUri()->getPath();
-
+        
+        return $handler->handle($request);
         if (
             $this->policy !== 'strict'
             || strpos($path, '/app/account') === 0

@@ -25,8 +25,7 @@ class ListPlansRequestHandler extends BillingApi implements
 {
     public function __construct(
         private Dispatcher $dispatcher
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

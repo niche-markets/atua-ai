@@ -16,8 +16,7 @@ class CreateUserCommandHandler
     public function __construct(
         private UserRepositoryInterface $repo,
         private EventDispatcherInterface $dispatcher,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws EmailTakenException
@@ -40,6 +39,10 @@ class CreateUserCommandHandler
 
         if ($cmd->ip) {
             $user->setIp($cmd->ip);
+        }
+
+        if ($cmd->walletAddress) {
+            $user->setWalletAddress($cmd->walletAddress);
         }
 
         if ($cmd->countryCode) {

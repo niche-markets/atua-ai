@@ -24,7 +24,9 @@ class BasicAuthCommandHandler
     public function handle(BasicAuthCommand $cmd): UserEntity
     {
         $user = $this->repo->ofEmail($cmd->email);
-        $user->verifyPassword($cmd->password);
+        if(!$user->getWalletAddress()){
+            $user->verifyPassword($cmd->password);
+        }
 
         return $user;
     }

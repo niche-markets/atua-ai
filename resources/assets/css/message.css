@@ -9,6 +9,7 @@
   from {
     -webkit-mask-position: 150%;
   }
+
   to {
     -webkit-mask-position: -50%;
   }
@@ -17,49 +18,38 @@
 .message {
   & .tool-processing {
     @apply text-content flex;
-    -webkit-mask-image: linear-gradient(
-      -75deg,
-      rgba(var(--color-content) / 0.4) 30%,
-      rgb(var(--color-content)) 50%,
-      rgba(var(--color-content) / 0.4) 70%
-    );
+    -webkit-mask-image: linear-gradient(-75deg,
+        rgba(var(--color-content) / 0.4) 30%,
+        rgb(var(--color-content)) 50%,
+        rgba(var(--color-content) / 0.4) 70%);
     -webkit-mask-size: 200%;
     animation: shine 2s linear infinite;
   }
 }
 
-.message x-markdown > div > * {
+.message x-markdown>div>* {
   --y: 3rem;
   animation: msg both linear;
   animation-timeline: view(100px);
   animation-range: entry;
 }
 
-.message x-markdown > div > *:nth-child(1) {
+.message x-markdown>div>*:nth-child(1) {
   --y: 1rem;
 }
 
-.message x-markdown > div > *:nth-child(2) {
+.message x-markdown>div>*:nth-child(2) {
   --y: 2rem;
 }
 
-.message x-markdown > div {
-  @apply prose
-    max-w-none 
-    font-editor 
-    prose-headings:font-editor-heading
-    prose-headings:font-semibold
-    prose-pre:p-6
-    prose-pre:relative
-    prose-pre:rounded-lg
-    prose-pre:bg-line-super-dimmed
-    leading-6;
+.message x-markdown>div {
+  @apply prose max-w-none font-editor prose-headings:font-editor-heading prose-headings:font-semibold prose-pre:p-6 prose-pre:relative prose-pre:rounded-lg prose-pre:bg-line-super-dimmed leading-6;
 
-  & > *:first-child {
+  &>*:first-child {
     @apply mt-0;
   }
 
-  & > *:last-child {
+  &>*:last-child {
     @apply mb-0;
   }
 

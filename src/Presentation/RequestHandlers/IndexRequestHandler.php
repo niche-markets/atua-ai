@@ -17,6 +17,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Presentation\Response\ViewResponse;
 use Shared\Infrastructure\CommandBus\Dispatcher;
+use User\Domain\Entities\UserEntity;
+use User\Domain\ValueObjects\Role;
 
 #[Middleware(ViewMiddleware::class)]
 #[Route(path: '/[locale:locale]?', method: RequestMethod::GET)]
@@ -42,6 +44,14 @@ class IndexRequestHandler extends AbstractRequestHandler implements
     public function handle(
         ServerRequestInterface $request
     ): ResponseInterface {
+        //check if user is logged in
+        // $user = $request->getAttribute(UserEntity::class);
+        // if ($user) {
+        //     return new RedirectResponse(
+        //         $user->getRole() == Role::ADMIN ? '/admin' : '/app'
+        //     );
+        // }
+
         if (!$this->isLandingPageEnabled) {
             return new RedirectResponse('/app');
         }

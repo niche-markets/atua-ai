@@ -1,7 +1,7 @@
 {% if view_namespace == 'app' %}
 <div class="relative mx-4"
   @click.outside="$refs.wsmenu.removeAttribute('data-open')">
-  <div class="text-base menu-bl w-60 menu peer" x-ref="wsmenu"
+  <div class="text-base menu-bl w-60 menu peer" x-ref="wsmenu" style="border:1px solid #333;"
     @click="$el.removeAttribute('data-open')">
 
     <div class="flex items-center w-full gap-3 p-4">
@@ -28,8 +28,6 @@
         <i class="ti ti-switch-horizontal"></i>
       </button>
     </div>
-
-    <hr class="border-t border-line-dimmed">
 
     <ul>
       <li>

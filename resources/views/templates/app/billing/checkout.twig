@@ -8,6 +8,9 @@ checkout({{ (plan ?? {})|json_encode() }})
 
 {% block template %}
 {% if workspace.owner.id == user.id %}
+{# <div>
+    {{ plan | json_encode(constant('JSON_PRETTY_PRINT')) }}
+</div> #}
 <div>
   {% include "snippets/back.twig" with {link: 'app/billing/plans', label: p__('button', 'Plans')} %}
   <h1 class="mt-4">{{ p__('heading', 'Checkout') }}</h1>
@@ -18,6 +21,9 @@ checkout({{ (plan ?? {})|json_encode() }})
 
   <div class="md:w-96 shrink-0">
     <div class="flex flex-col gap-4 p-8 box">
+
+    {# <h3 class="text-xl">{{ plan.title }}</h3> #}
+
       <h2>
         {% if plan.billing_cycle in ['monthly', 'yearly'] %}
         {{ __('Subscription') }}
@@ -125,7 +131,17 @@ checkout({{ (plan ?? {})|json_encode() }})
     </div>
   </div>
 
-  <div class="flex flex-col gap-6 py-8 grow"
+  <div class="flex flex-col gap-6 py-8 grow">
+    <div id='btn-purchase' class="w-full" data-workspace="{{user.current_workspace_id}}" data-planprice="{{plan.price}}" data-planid="{{plan.id}}">
+    </div>
+    {# <form @submit.prevent="purchase()">
+      <button type="submit" class="w-full button" :processing="processing">
+        {% include "/snippets/spinner.twig" %}
+        {{ p__('button', 'Purchase') }}
+      </button>
+    </form> #}
+  </div>
+  {# <div class="flex flex-col gap-6 py-8 grow"
     x-init="showAddressForm = !$store.workspace.address" x-cloak>
     <div class="flex flex-col gap-6">
       <h2>
@@ -367,7 +383,7 @@ checkout({{ (plan ?? {})|json_encode() }})
       </form>
       {% endif %}
     </div>
-  </div>
+  </div> #}
 </div>
 {% else %}
 <div class="flex flex-col gap-6 my-20">

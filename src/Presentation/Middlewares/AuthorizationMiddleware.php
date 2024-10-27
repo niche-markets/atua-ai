@@ -32,7 +32,7 @@ class AuthorizationMiddleware implements MiddlewareInterface
         if (strpos($path, '/auth/') !== false) {
             return $handler->handle($request);
         }
-
+        // TODO: 
         if (!$user) {
             throw new UnauthorizedException();
         }

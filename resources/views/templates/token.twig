@@ -1,0 +1,45 @@
+{% extends "/layouts/full.twig" %}
+
+{% block title p__('title', 'GET TUA')|title %}
+
+{% block template %}
+<section class="xs:p-8 box md:px-14 pt-16 pb-8">
+
+  <div id="features" style="margin-top: 3rem">
+  <h1 class="text-center enter text-5xl">
+    {{ dp__('theme', 'heading', 'GET TUA') }}
+  </h1>
+   <p class="text-center enter text-xl my-6">
+    {{ d__('theme', 'The $TUA token powers the Atua AI platform. All payments for Atua AI products and services are made using the TUA token. Atua supports secure  crypto payment processing methods as well as traditional payment channels such as credit cards, debit cards. This ensures safe and reliable transactions for users and businesses alike and a broader access.') }}
+  </p>
+  
+  <div class="max-md:gap-4 flex flex-wrap w-full" style="justify-content: center; align-items: center;">
+    <div style="align-items: center;">
+      <a href="https://www.mexc.com/exchange/AGII_USDT" target="blank">
+      <img width="100px" height="100px" style="padding: 10px; visibility: visible;" src="https://agii.app/public/assets/img/mexc-logo.png" alt="" data-nsfw-filter-status="sfw"></a>
+    </div>
+    <div style="align-items: center;">
+      <a href="https://pancakeswap.finance/swap?outputCurrency=0x328fd053c4bb968875afd9ad0af36fcf4a0bdda9" target="blank">
+      <img width="80px" height="70px" style="padding: 10px; visibility: visible;" src="https://agii.app/public/assets/img/pancakeswap-cake-logo.png" alt="" data-nsfw-filter-status="sfw"></a>
+    </div>
+    <div style="align-items: center;">
+      <a href="https://app.uniswap.org/#/swap?outputCurrency=0x75d86078625d1e2f612de2627d34c7bc411c18b8" target="blank">
+      <img width="80px" height="80px" style="padding-bottom: 10px; visibility: visible;" src="https://agii.app/public/assets/img/uniswap-logo.png" alt="" data-nsfw-filter-status="sfw"></a>
+    </div>
+  </div>
+
+  <div class="mt-6 wrapper flex justify-center md:flex-row flex-col">
+      <iframe src="https://widget.uniramp.com/?api_key=pk_prod_1HEHHAezwKsAwSNEKQ7wK63YR6Mk725F" height="650" width="370" class="md:w-[370px] w-[100%]" style="border: 1px #00000030 solid; border-radius: 4px; margin-right: 1.2rem" name="Uniramp"></iframe>
+      <iframe src="https://flooz.xyz/embed/trade?swapDisabled=false&swapNetwork=bsc&swapLockToToken=false&onRampDisabled=false&onRampNetwork=bsc&onRampAsDefault=true&onRampTokenAddress=0x328fD053C4BB968875aFD9aD0aF36Fcf4A0BddA9&onRampLockToken=true&network=eth&lightMode=false&backgroundColor=transparent&miniApp=false&miniappIntent=swap" class="md:w-[370px] w-[100%] md:mt-0 mt-8" width="370" height="650"></iframe>
+  </div>
+
+  <h4 class="text-center enter mt-8" style="font-size:32px; padding:10px;">{{ dp__('theme', 'heading', 'Get $TUA') }}</h4>
+  <p class="text-base [&_strong]:text-black text-center [&_strong]:font-semibold" >Get $TUA from leading exchanges. You can also buy TUA tokens using popular credit/debit card issued by Visa/Mastercard and Bank transfer.</p>
+  <p class="text-base [&_strong]:text-black text-center [&_strong]:font-semibold mb-4" style="color:gray; margin-top: 2rem"> 
+    Disclaimer: This website is for informational purposes only and does not constitute financial or investment advice. Users are encouraged to conduct their research before engaging with Atua AI's services or TUA token. Holding $TUA, including associated tokens, involves significant risks, including the risk of loss of capital. Prices of digital assets are highly volatile and can fluctuate dramatically in a short period. The cryptocurrency market is subject to regulatory uncertainty, technological risks, and market volatility. By holding $TUA tokens, you acknowledge and accept the inherent risks associated with cryptocurrency investments.
+  </p>
+</div>
+
+</section>
+
+{% endblock %}

@@ -55,8 +55,7 @@ class UserJwt
         private string $uuid,
         private bool $isAdmin = false,
         private ?DateTimeInterface $expiresAt = null
-    ) {
-    }
+    ) {}
 
     /**
      * @return string 

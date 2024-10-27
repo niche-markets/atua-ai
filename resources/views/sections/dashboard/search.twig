@@ -2,7 +2,7 @@
   @input.debounce.200="search($event.target.value)" class="relative"
   @click.outside="showResults = false">
   <div
-    class="relative p-1 rounded-xl bg-line-dimmed text-content-dimmed focus-within:text-content focus-within:bg-gradient-from focus-within:bg-gradient-to-br focus-within:from-gradient-from focus-within:to-gradient-to">
+    class="relative p-1 rounded-xl bg-line-dimmed text-content-dimmed">
 
     <input type="text" name="q"
       placeholder="{{ __('Search or ask AI directly...') }}" autocomplete="off"

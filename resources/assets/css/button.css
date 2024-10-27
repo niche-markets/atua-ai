@@ -49,7 +49,7 @@ button {
 
 /* Styles */
 .button-accent {
-  @apply bg-button-accent text-button-accent-content outline-button-accent;
+  @apply bg-button-accent text-button-accent-content outline-button-accent border border-[1px];
 }
 
 .button-dimmed {

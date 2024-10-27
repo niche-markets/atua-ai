@@ -117,14 +117,13 @@
 
         {{ p__('button', 'Sign in') }}
       </button>
-
       {% set user_accounts_enabled = option.site.user_accounts_enabled is not defined or option.site.user_accounts_enabled %}
       {% set user_signup_enabled = option.site.user_signup_enabled is not defined or option.site.user_signup_enabled %}
 
       {% if user_accounts_enabled and user_signup_enabled %}
       <div class="flex flex-col items-center gap-1 text-sm md:flex-row">
         <span class="flex items-center gap-1">
-          <i class="text-base ti ti-help-square-rounded"></i>
+          {# <i class="text-base ti ti-help-square-rounded"></i> #}
 
           {{ __('Don\'t have an account?') }}
         </span>

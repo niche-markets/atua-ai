@@ -213,7 +213,7 @@ chat(
     </template>
 
     <template x-if="conversation">
-      <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4 chat-main-page-panel">
         <div class="grow">
           <div class="text-xl autogrow-textarea font-editor-heading"
             :data-replicated-value="conversation.title">
@@ -530,7 +530,7 @@ chat(
       </div>
 
       <div
-        class="relative p-1 rounded-xl bg-line-dimmed has-[textarea:focus]:bg-gradient-to-br has-[textarea:focus]:from-gradient-from has-[textarea:focus]:to-gradient-to">
+        class="relative p-1 rounded-xl bg-line-dimmed has-[textarea:focus]:from-gradient-from has-[textarea:focus]:to-gradient-to">
 
         <template x-if="quote">
           <div

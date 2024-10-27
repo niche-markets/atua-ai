@@ -29,6 +29,8 @@ class UserResource implements JsonSerializable
             'email' => $u->getEmail(),
             'first_name' => $u->getFirstName(),
             'last_name' => $u->getLastName(),
+            'wallet_address' => $u->getWalletAddress(),
+            'current_workspace_id' => $u->getCurrentWorkspace()->getId(),
             'language' => $u->getLanguage(),
             'has_password' => $u->hasPassword(),
 

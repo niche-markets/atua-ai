@@ -2,9 +2,9 @@
 
 import Alpine from 'alpinejs';
 import mask from '@alpinejs/mask'
-import { installerView } from './installer.js';
+// import { installerView } from './installer.js';
 
-installerView();
+// installerView();
 
 // Call after views are loaded
 Alpine.plugin(mask);

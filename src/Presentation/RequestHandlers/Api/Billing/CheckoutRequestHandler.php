@@ -38,13 +38,17 @@ class CheckoutRequestHandler extends BillingApi implements
         private WorkspaceAccessControl $ac,
         private Dispatcher $dispatcher,
         private PaymentGatewayFactoryInterface $factory
-    ) {
-    }
+    ) {}
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $this->validateRequest($request);
+        $user = $request->getAttribute(UserEntity::class);
+        // $this->validateRequest($request);
         $payload = (object) $request->getParsedBody();
+        // dd($payload);
+        if (!$payload->tx) {
+            return new JsonResponse(['msg' => 'something went wrong'], StatusCode::FORBIDDEN);
+        }
 
         /** @var WorkspaceEntity */
         $ws = $request->getAttribute(WorkspaceEntity::class);
@@ -57,6 +61,10 @@ class CheckoutRequestHandler extends BillingApi implements
 
         /** @var OrderEntity */
         $order = $this->dispatcher->dispatch($cmd);
+        // dd($order, $order->getTotalPrice());
+        // if ($order->getTotalPrice()->value > 0) {
+        //     $order->pay();
+        // }
 
         if ($order->getTotalPrice()->value > 0 && !$order->isPaid()) {
             // Pay for order...
@@ -88,7 +96,6 @@ class CheckoutRequestHandler extends BillingApi implements
             $cmd = new PayOrderCommand($order, $payload->gateway, $resp);
             $this->dispatcher->dispatch($cmd);
         }
-
         $cmd = new FulfillOrderCommand($order);
         $resp = $this->dispatcher->dispatch($cmd);
 
@@ -105,7 +112,7 @@ class CheckoutRequestHandler extends BillingApi implements
     {
         $this->validator->validateRequest($req, [
             'id' => 'required|uuid',
-            'gateway' => 'string'
+            // 'gateway' => 'string'
         ]);
 
         /** @var UserEntity */

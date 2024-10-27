@@ -22,7 +22,7 @@ class Email implements JsonSerializable
      */
     public function __construct(string $value)
     {
-        $this->ensureValueIsValid($value);
+        // $this->ensureValueIsValid($value);
         $this->value = $value;
     }
 

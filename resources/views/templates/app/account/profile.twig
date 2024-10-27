@@ -57,7 +57,8 @@ account({{ user|json_encode }})
           {% endfor %}
         </select>
       </div>
-
+      
+      {% if not user.wallet_address %}
       <div>
         <div class="flex items-center justify-between">
           <label for="email" class="inline-flex items-center gap-2">
@@ -82,7 +83,7 @@ account({{ user|json_encode }})
         <input type="text" id="email" class="mt-2 input" autocomplete="off"
           placeholder="{{ user.email }}" value="{{ user.email }}" disabled />
       </div>
-
+      {% endif %}
       {% if apiEnabled %}
       <div class="md:col-span-2">
         <div class="flex flex-col gap-4 box">

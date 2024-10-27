@@ -38,10 +38,6 @@
       --font-family-editor-heading: 'Noto Serif';
 
       /* Theme colors */
-      --color-accent: {{ option.color_scheme.accent.rgb ?? '211 243 107' }};
-      --color-accent-content: {{ option.color_scheme.accent_content.rgb ?? '63 66 70' }};
-
-      --color-main: 255 255 255;
 
       --color-content: 63 66 70;
       --color-content-dimmed: 172 174 175;
@@ -73,18 +69,22 @@
       --color-success: 48 200 98;
       --color-failure: 254 81 87;
       --color-alert: 254 212 73;
+
+      --color-main: 255 255 255; //smartdev
+      --color-contrast-primary: 255 255 255; //smartdev
     }
 
     :root[data-mode="dark"] {
       /* Theme colors */
-      --color-main: 38 40 43;
+      --color-contrast-primary: 0 0 0;
+      --color-main: 0 0 0; //smartdev
 
       --color-content: 245 246 246;
       --color-content-dimmed: 172 174 175;
       --color-content-super-dimmed: 144 145 148;
 
       --color-line: 96 98 101;
-      --color-line-dimmed: 63 66 70;
+      --color-line-dimmed: 245 246 246;
       --color-line-super-dimmed: 44 46 49;
 
       --color-intermediate: 25 26 28;
@@ -204,6 +204,7 @@
   {% block layout %}{% endblock %}
 
   <script src="assets/base.js?v={{ version }}"></script>
+  <script type="module" src="assets/js/web3/main.js?v={{ version}}"></script>
   {% block scripts %}{% endblock %}
 
   {% include "snippets/script-tags/end.twig" %}

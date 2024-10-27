@@ -1,0 +1,18 @@
+modal-element {
+  @apply fixed top-0 left-0 h-full w-full z-50 bg-content/10 transition-all opacity-0 invisible overflow-y-auto;
+
+  &.open {
+    @apply visible opacity-100 backdrop-blur-lg;
+  }
+}
+
+.modal {
+  @apply absolute 
+    -translate-x-1/2 
+    -translate-y-1/2 
+    top-1/2 
+    left-1/2 
+    
+    transition-all 
+    group-[[clicked]]/modal:scale-105;
+}

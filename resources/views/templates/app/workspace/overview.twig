@@ -1,0 +1,642 @@
+{% extends "/layouts/main.twig" %}
+
+{% set xdata = 'workspace' %}
+{% block title p__('title', 'Workspace')|title %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'app', label: p__('button', 'Dashboard')} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Workspace Overview') }}</h1>
+
+  <div class="mt-2">
+    <x-uuid x-text="$store.workspace.id"></x-uuid>
+  </div>
+</div>
+
+<div class="flex flex-col gap-2">
+  <section class="grid grid-cols-1 gap-6 box" data-density="comfortable">
+    <h2>{{ p__('heading', 'General') }}</h2>
+
+    <div class="flex flex-col gap-1">
+      <div
+        class="flex items-center justify-between p-4 rounded-2xl bg-intermediate text-intermediate-content">
+        <div>
+          <label>{{ p__('label', 'Workspace name') }}</label>
+          <div x-text="$store.workspace.name"></div>
+        </div>
+
+        <template x-if="$store.workspace.owner.id == $store.user.id">
+          <button type="button" @click="modal.open('workspace-name')"
+            class="flex items-center justify-center w-8 h-8 rounded-full bg-main outline-1 outline-line hover:outline outline-offset-0">
+            <i class="text-base ti ti-pencil"></i>
+          </button>
+        </template>
+      </div>
+
+      <div class="p-4 rounded-2xl bg-intermediate">
+        <label>{{ p__('label', 'Subscription') }}</label>
+
+        <template x-if="$store.workspace.subscription">
+          <p>
+            {{ __("Your workspace is currently subscribed to %s.")|format('<strong x-text="$store.workspace.subscription.plan.title"></strong>')|raw }}
+
+            <template x-if="$store.workspace.subscription.plan.price <= 0">
+              <span>
+                {{ __('Subscribe to one of the our plans to get access to all features and benefits.') }}
+              </span>
+            </template>
+          </p>
+        </template>
+
+        <template x-if="!$store.workspace.subscription">
+          <p>
+            {{ __('Currently this workspace doesn\'t have any active subscription. Subscribe to one of the our plans to get access to all features and benefits.') }}
+          </p>
+        </template>
+
+        <div class="mt-4">
+          <a href="app/billing" class="button button-sm button-secondary">
+            {{ p__('button', 'Billing overview') }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid grid-cols-1 gap-6 box" data-density="comfortable">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2>{{ p__('heading', 'Team') }}</h2>
+        <div class="text-xs text-content-dimmed">
+          {{ n__('Total :count member', 'Total :count members', workspace.users|length + 1)|replace({':count' : '<span x-text="$store.workspace.users.length + 1"></span>'})|raw }}
+        </div>
+      </div>
+
+      <template x-if="$store.user.id == $store.workspace.owner.id == 1">
+        <button type="button"
+          class="hidden md:flex button button-sm button-accent"
+          @click="modal.open('workspace-invite')">
+          <i class="ti ti-square-rounded-plus"></i>
+          {{ p__('button', 'Invite member') }}
+        </button>
+      </template>
+    </div>
+
+    <ul class="flex flex-col gap-1">
+      <li class="relative grid items-center grid-cols-4 gap-3 p-3 box" x-data>
+        <div class="flex items-center col-span-2 gap-3">
+          <div class="avatar">
+            <span
+              x-text="`${$store.workspace.owner.first_name} ${$store.workspace.owner.last_name}`.match(/(\b\S)?/g).join('').slice(0, 2)"></span>
+
+            <template x-if="$store.workspace.owner.avatar">
+              <img :src="$store.workspace.owner.avatar"
+                :alt="`${$store.workspace.owner.first_name} ${$store.workspace.owner.last_name}`">
+            </template>
+          </div>
+
+          <div>
+            <div class="flex items-center gap-2">
+              <div class="font-bold"
+                x-text="`${$store.workspace.owner.first_name} ${$store.workspace.owner.last_name}`">
+              </div>
+
+              <template x-if="$store.workspace.owner.id == $store.user.id">
+                <span class="badge badge-success">{{ __('You') }}</span>
+              </template>
+            </div>
+
+            <div class="text-xs text-content-dimmed"
+              x-text="$store.workspace.owner.email">
+            </div>
+          </div>
+        </div>
+
+        <div class="justify-self-start">
+          <div class="badge">
+            {{ p__('input-value', 'Owner') }}
+          </div>
+        </div>
+
+        <div class="justify-self-end">
+        </div>
+      </li>
+
+      <template x-for="u in $store.workspace.users" :key="u.id">
+        <li class="relative grid items-center grid-cols-4 gap-3 p-3 box" x-data>
+          <div class="flex items-center col-span-2 gap-3">
+            <div class="avatar">
+              <span
+                x-text="`${u.first_name} ${u.last_name}`.match(/(\b\S)?/g).join('').slice(0, 2)"></span>
+
+              <template x-if="u.avatar">
+                <img :src="u.avatar" :alt="`${u.first_name} ${u.last_name}`">
+              </template>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-2">
+                <div class="font-bold"
+                  x-text="`${u.first_name} ${u.last_name}`">
+                </div>
+
+                <template x-if="u.id == $store.user.id">
+                  <span class="badge badge-success">{{ __('You') }}</span>
+                </template>
+              </div>
+
+
+              <div class="text-xs text-content-dimmed" x-text="u.email">
+              </div>
+            </div>
+          </div>
+
+          <div class="justify-self-start">
+            <div class="badge">
+              {{ p__('input-value', 'Member') }}
+            </div>
+          </div>
+
+          <div class="justify-self-end">
+            <template
+              x-if="$store.user.id == $store.workspace.owner.id || u.id == $store.user.id">
+              <div class="relative"
+                @click.outside="$refs.context.removeAttribute('data-open')">
+
+                <button class="relative z-10"
+                  @click="$refs.context.toggleAttribute('data-open')">
+                  <i
+                    class="ti ti-dots-vertical text-content-dimmed hover:text-intermediate-content"></i>
+                </button>
+
+                <div class="menu" x-ref="context">
+                  <ul>
+                    <template x-if="u.id == $store.user.id">
+                      <li>
+                        <button
+                          class="flex items-center w-full gap-2 px-4 py-2 hover:no-underline hover:bg-intermediate"
+                          @click.prevent="modal.open('leave-modal')">
+                          <i class="ti ti-arrow-right"></i>
+
+                          {{ p__('button', 'Leave') }}
+                        </button>
+                      </li>
+                    </template>
+
+                    <template
+                      x-if="$store.user.id == $store.workspace.owner.id && $store.user.owned_workspaces.length > 1">
+                      <li>
+                        <button
+                          class="flex items-center w-full gap-2 px-4 py-2 hover:no-underline hover:bg-intermediate"
+                          @click.prevent="currentResource = u; modal.open('transfer-ownership-modal')">
+                          <i class="ti ti-transfer"></i>
+
+                          {{ p__('button', 'Transfer ownership') }}
+                        </button>
+                      </li>
+                    </template>
+
+                    <template
+                      x-if="$store.user.id == $store.workspace.owner.id">
+                      <li>
+                        <button
+                          class="flex items-center w-full gap-2 px-4 py-2 hover:no-underline hover:bg-intermediate"
+                          @click.prevent="currentResource = u; modal.open('delete-modal')">
+                          <i class="ti ti-x"></i>
+
+                          {{ p__('button', 'Remove user') }}
+                        </button>
+                      </li>
+                    </template>
+                  </ul>
+                </div>
+              </div>
+            </template>
+          </div>
+        </li>
+      </template>
+
+      <template x-for="u in $store.workspace.invitations" :key="u.id">
+        <li class="relative grid items-center grid-cols-4 gap-3 p-3 box" x-data>
+          <div class="flex items-center col-span-2 gap-3">
+            <div class="avatar">
+              <span
+                x-text="`${u.email}`.match(/(\b\S)?/g).join('').slice(0, 1)"></span>
+            </div>
+
+            <div class="text-xs text-content-dimmed" x-text="u.email">
+            </div>
+          </div>
+
+          <div class="justify-self-start">
+
+            <div class="flex items-center gap-2">
+              <div class="opacity-50 badge">
+                {{ p__('input-value', 'Invited') }}
+              </div>
+
+              <x-copy class="button button-xs button-dimmed"
+                x-tooltip.raw="{{ __("Click to copy invitation link") }}"
+                class="flex items-center gap-1"
+                :data-copy="`${window.location.origin}/app/workspace/${ $store.workspace.id }/invitations/${ u.id}`">
+                <i class="ti ti-link"></i>
+              </x-copy>
+            </div>
+          </div>
+
+          <div class="justify-self-end">
+            <template
+              x-if="isProcessing && currentResource && currentResource.id == u.id">
+              <div>
+                {% include "/snippets/spinner.twig" %}
+              </div>
+            </template>
+
+            <template
+              x-if="$store.user.id == $store.workspace.owner.id && !(isProcessing && currentResource && currentResource.id == u.id)">
+              <div class="relative"
+                @click.outside="$refs.context.removeAttribute('data-open')">
+
+                <button class="relative z-10"
+                  @click="$refs.context.toggleAttribute('data-open')">
+                  <i
+                    class="ti ti-dots-vertical text-content-dimmed hover:text-intermediate-content"></i>
+                </button>
+
+                <div class="menu" x-ref="context">
+                  <ul>
+                    <li>
+                      <button
+                        class="flex items-center w-full gap-2 px-4 py-2 hover:no-underline hover:bg-intermediate"
+                        @click.prevent="currentResource = u; $refs.context.removeAttribute('data-open'); inviteMember($store.workspace.id, u.email)">
+                        <i class="ti ti-transfer"></i>
+
+                        {{ p__('button', 'Resend invitation') }}
+                      </button>
+                    </li>
+
+                    <li>
+                      <button
+                        class="flex items-center w-full gap-2 px-4 py-2 hover:no-underline hover:bg-intermediate"
+                        @click.prevent="currentResource = u; modal.open('delete-invitation')">
+                        <i class="ti ti-x"></i>
+
+                        {{ p__('button', 'Remove invitation') }}
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </template>
+          </div>
+        </li>
+      </template>
+    </ul>
+  </section>
+
+  <template
+    x-if="$store.user.id == $store.workspace.owner.id && $store.user.owned_workspaces.length > 1">
+    <section class="flex flex-col gap-6 box" data-density="comfortable">
+      <h2>{{ p__('heading', 'Danger zone') }}</h2>
+
+      <div class="flex items-center justify-between">
+        <div class="">
+          <label>{{ p__('label', 'Delete workspace') }}</label>
+          <div>
+            {{ __('Once you delete a workspace, there is no going back. Please be certain.') }}
+          </div>
+        </div>
+
+        <button type="button"
+          class="button button-outline button-sm text-failure"
+          @click="modal.open('delete-wroksapce-modal')">
+          {{ p__('button', 'Delete workspace') }}
+        </button>
+      </div>
+    </section>
+  </template>
+</div>
+
+<modal-element name="transfer-ownership-modal">
+  <template x-if="currentResource">
+    <form class="modal"
+      @submit.prevent="transferOwnership($store.workspace.id, currentResource.id); modal.close()">
+      <div class="p-8 rounded-xl bg-main w-[480px] shadow-2xl">
+        <div class="max-w-xs mx-auto">
+          <div
+            class="relative flex items-center justify-center w-24 h-24 mx-auto rounded-full text-failure/25">
+
+            <svg class="absolute top-0 left-0 w-full h-full" width="112"
+              height="112" viewBox="0 0 112 112" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+                stroke-dasharray="8 8" />
+            </svg>
+
+            <div
+              class="flex items-center justify-center w-20 h-20 text-4xl transition-all rounded-full bg-failure/25 text-failure">
+              <i class="text-4xl ti ti-transfer"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 text-lg text-center">
+            {% set full_name %}
+            <strong
+              x-text="`${currentResource.first_name} ${currentResource.last_name}`"></strong>
+            {% endset %}
+
+            {{ __('Do you really want to transfer workspace ownership to :full_name?')|replace({':full_name': full_name})|raw }}
+          </div>
+
+          <div class="flex items-center justify-center gap-4 mt-10">
+            <button class="button button-outline" @click="modal.close()"
+              type="button">
+              {{ p__('button', 'Cancel') }}
+            </button>
+
+            <button class="button button-failure" type="submit">
+              {{ p__('button', 'Transfer ownership') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </template>
+</modal-element>
+
+<modal-element name="delete-wroksapce-modal">
+  <form class="modal"
+    @submit.prevent="deleteWorkspace($store.workspace.id); modal.close()">
+    <div class="p-8 rounded-xl bg-main w-[480px] shadow-2xl">
+      <div class="max-w-xs mx-auto">
+        <div
+          class="relative flex items-center justify-center w-24 h-24 mx-auto rounded-full text-failure/25">
+
+          <svg class="absolute top-0 left-0 w-full h-full" width="112"
+            height="112" viewBox="0 0 112 112" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+              stroke-dasharray="8 8" />
+          </svg>
+
+          <div
+            class="flex items-center justify-center w-20 h-20 text-4xl transition-all rounded-full bg-failure/25 text-failure">
+            <i class="text-4xl ti ti-trash"></i>
+          </div>
+        </div>
+
+        <div class="mt-4 text-lg text-center">
+          {% set title_html %}
+          <strong x-text="$store.workspace.name"></strong>
+          {% endset %}
+
+          {{ __('Do you really want to remove :title workspace?')|replace({':title': title_html})|raw }}
+        </div>
+
+        <div class="flex items-center justify-center gap-4 mt-10">
+          <button class="button button-outline" @click="modal.close()"
+            type="button">
+            {{ p__('button', 'No, cancel') }}
+          </button>
+
+          <button class="button button-failure" type="submit">
+            {{ p__('button', 'Yes, remove') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</modal-element>
+
+<modal-element name="delete-invitation">
+  <template x-if="currentResource">
+    <form class="modal"
+      @submit.prevent="deleteInvitation($store.workspace.id, currentResource.id); modal.close()">
+      <div class="p-8 rounded-xl bg-main w-[480px] shadow-2xl">
+        <div class="max-w-xs mx-auto">
+          <div
+            class="relative flex items-center justify-center w-24 h-24 mx-auto rounded-full text-failure/25">
+
+            <svg class="absolute top-0 left-0 w-full h-full" width="112"
+              height="112" viewBox="0 0 112 112" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+                stroke-dasharray="8 8" />
+            </svg>
+
+            <div
+              class="flex items-center justify-center w-20 h-20 text-4xl transition-all rounded-full bg-failure/25 text-failure">
+              <i class="text-4xl ti ti-trash"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 text-lg text-center">
+            {{ __('Do you really want to delete the invitation?') }}
+          </div>
+
+          <div class="flex items-center justify-center gap-4 mt-10">
+            <button class="button button-outline" @click="modal.close()"
+              type="button">
+              {{ p__('button', 'No, cancel') }}
+            </button>
+
+            <button class="button button-failure" type="submit">
+              {{ p__('button', 'Yes, delete') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </template>
+</modal-element>
+
+<modal-element name="delete-modal">
+  <template x-if="currentResource">
+    <form class="modal"
+      @submit.prevent="removeMember($store.workspace.id, currentResource.id); modal.close()">
+      <div class="p-8 rounded-xl bg-main w-[480px] shadow-2xl">
+        <div class="max-w-xs mx-auto">
+          <div
+            class="relative flex items-center justify-center w-24 h-24 mx-auto rounded-full text-failure/25">
+
+            <svg class="absolute top-0 left-0 w-full h-full" width="112"
+              height="112" viewBox="0 0 112 112" fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+                stroke-dasharray="8 8" />
+            </svg>
+
+            <div
+              class="flex items-center justify-center w-20 h-20 text-4xl transition-all rounded-full bg-failure/25 text-failure">
+              <i class="text-4xl ti ti-trash"></i>
+            </div>
+          </div>
+
+          <div class="mt-4 text-lg text-center">
+            {% set title_html %}
+            <strong
+              x-text="`${currentResource.first_name} ${currentResource.last_name}`"></strong>
+            {% endset %}
+
+            {{ __('Do you really want to remove :title from workspace?')|replace({':title': title_html})|raw }}
+          </div>
+
+          <div class="flex items-center justify-center gap-4 mt-10">
+            <button class="button button-outline" @click="modal.close()"
+              type="button">
+              {{ p__('button', 'No, cancel') }}
+            </button>
+
+            <button class="button button-failure" type="submit">
+              {{ p__('button', 'Yes, remove') }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </template>
+</modal-element>
+
+<modal-element name="leave-modal">
+  <form class="modal"
+    @submit.prevent="removeMember($store.workspace.id, $store.user.id); modal.close()">
+    <div class="p-8 rounded-xl bg-main w-[480px] shadow-2xl">
+      <div class="max-w-xs mx-auto">
+        <div
+          class="relative flex items-center justify-center w-24 h-24 mx-auto rounded-full text-failure/25">
+
+          <svg class="absolute top-0 left-0 w-full h-full" width="112"
+            height="112" viewBox="0 0 112 112" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <circle cx="56" cy="56" r="55.5" stroke="currentColor"
+              stroke-dasharray="8 8" />
+          </svg>
+
+          <div
+            class="flex items-center justify-center w-20 h-20 text-4xl transition-all rounded-full bg-failure/25 text-failure">
+            <i class="text-4xl ti ti-arrow-right"></i>
+          </div>
+        </div>
+
+        <div class="mt-4 text-lg text-center">
+          {% set title_html %}
+          <strong x-text="$store.workspace.name"></strong>
+          {% endset %}
+
+          {{ __('Do you really want to leave :name workspace?')|replace({':name': title_html})|raw }}
+        </div>
+
+        <div class="flex items-center justify-center gap-4 mt-10">
+          <button class="button button-outline" @click="modal.close()"
+            type="button">
+            {{ p__('button', 'Cancel') }}
+          </button>
+
+          <button class="button button-failure">
+            {{ p__('button', 'Leave workspace') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</modal-element>
+
+<modal-element name="workspace-name" x-data="workspace">
+  <x-form>
+    <form class="modal"
+      @submit.prevent="rename($store.workspace.id, $refs.name.value)">
+      <div class="p-8 rounded-xl bg-main w-[480px] flex flex-col gap-8">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl">{{ p__('heading', 'Rename workspace') }}</h2>
+
+          <button
+            class="flex items-center justify-center w-8 h-8 border border-transparent rounded-full bg-line-dimmed hover:border-line"
+            @click="modal.close()" type="button">
+            <i class="text-xl ti ti-x"></i>
+          </button>
+        </div>
+
+        <div>
+          <label
+            for="workspace-name">{{ p__('label', 'Workspace name') }}</label>
+          <input type="text" class="mt-2 input" id="workspace-name" required
+            x-ref="name" :value.trim="$store.workspace.name">
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button type="button" class="button button-outline"
+            @click="modal.close()" type="button">
+            {{ p__('button', 'Cancel') }}
+          </button>
+
+          <button type="submit" class="button button-accent"
+            :processing="isProcessing">
+            {% include "/snippets/spinner.twig" %}
+
+            {{ p__('button', 'Save changes') }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </x-form>
+</modal-element>
+
+<modal-element name="workspace-invite" x-data="workspace">
+  <x-form>
+    <form class="modal"
+      @submit.prevent="inviteMember($store.workspace.id, $refs.email.value)">
+      <div class="p-8 rounded-xl bg-main w-[480px] flex flex-col gap-8">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl">{{ p__('heading', 'Invite member') }}</h2>
+
+          <button
+            class="flex items-center justify-center w-8 h-8 border border-transparent rounded-full bg-line-dimmed hover:border-line"
+            @click="modal.close()" type="button">
+            <i class="text-xl ti ti-x"></i>
+          </button>
+        </div>
+
+        <div>
+          <label for="workspace-member-email">
+            {{ p__('label', 'Member email') }}
+          </label>
+
+          <input type="email" class="mt-2 input" id="workspace-member-email"
+            required x-ref="email" placeholder="">
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button type="button" class="button button-outline" type="button"
+            @click="modal.close()">
+            {{ p__('button', 'Cancel') }}
+          </button>
+
+          <button type="submit" class="button button-accent"
+            :processing="isProcessing">
+            {% include "/snippets/spinner.twig" %}
+
+            {{ p__('button', 'Send invitation') }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </x-form>
+</modal-element>
+{% endblock %}
+
+{% block scripts %}
+{{ parent() }}
+
+{% if show_invitation_accepted_toast is defined %}
+<script>
+  let str = 'You\'ve been added to the :name workspace!';
+  let msg = window.locale.messages[str] || str
+
+  window.toast.show(
+    msg.replace(":name", '<strong class="font-bold">{{ workspace.name }}</strong>'),
+    'ti ti-square-rounded-check-filled'
+  );
+</script>
+{% endif %}
+{% endblock %}

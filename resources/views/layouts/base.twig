@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="{{ locale ?? 'en-US' }}" class="group/html"
+  data-color-scheme="{{ (option.color_scheme ?? {})|json_encode|raw|e("html_attr") }}">
+
+<head>
+  {% include "snippets/script-tags/head.twig" %}
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="">
+
+  <base href="/">
+
+  <link rel="icon" type="image/x-icon"
+    href="{{ option.brand.favicon ?? 'assets/favicon.ico' }}">
+
+  <link rel="stylesheet"
+    href="https://unpkg.com/@tabler/icons-webfont@2.36.0/tabler-icons.min.css" />
+  <link rel="stylesheet" href="assets/app.css?v={{ version }}">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:wght@100;300;400;500;600;700&display=swap"
+    rel="stylesheet">
+
+  {% if option.pwa.is_enabled is defined and option.pwa.is_enabled %}
+  <link rel="manifest" href="app.webmanifest">
+  {% endif %}
+
+  <style>
+    :root {
+      /* Typography */
+      --font-family-primary: 'Inter', sans-serif;
+      --font-family-secondary: 'Inter', sans-serif;
+      --font-family-editor: 'Inter', sans-serif;
+      --font-family-editor-heading: 'Noto Serif';
+
+      /* Theme colors */
+      --color-accent: {{ option.color_scheme.accent.rgb ?? '211 243 107' }};
+      --color-accent-content: {{ option.color_scheme.accent_content.rgb ?? '63 66 70' }};
+
+      --color-main: 255 255 255;
+
+      --color-content: 63 66 70;
+      --color-content-dimmed: 172 174 175;
+      --color-content-super-dimmed: 207 208 208;
+
+      --color-line: 227 228 228;
+      --color-line-dimmed: 245 246 246;
+      --color-line-super-dimmed: 250 251 251;
+
+      --color-intermediate: 245 246 246;
+      --color-intermediate-content: 63 66 70;
+      --color-intermediate-content-dimmed: 172 174 175;
+
+      --color-button: 63 66 70;
+      --color-button-content: 255 255 255;
+
+      --color-button-dimmed: 245 246 246;
+      --color-button-dimmed-content: 63 66 70;
+
+      --color-button-accent: var(--color-accent);
+      --color-button-accent-content: var(--color-accent-content);
+
+      --color-gradient-from: 231 255 155;
+      --color-gradient-to: 207 230 255;
+      --color-gradient-content: 63 66 70;
+
+      /* --------------- */
+      --color-info: 0 166 251;
+      --color-success: 48 200 98;
+      --color-failure: 254 81 87;
+      --color-alert: 254 212 73;
+    }
+
+    :root[data-mode="dark"] {
+      /* Theme colors */
+      --color-main: 38 40 43;
+
+      --color-content: 245 246 246;
+      --color-content-dimmed: 172 174 175;
+      --color-content-super-dimmed: 144 145 148;
+
+      --color-line: 96 98 101;
+      --color-line-dimmed: 63 66 70;
+      --color-line-super-dimmed: 44 46 49;
+
+      --color-intermediate: 25 26 28;
+      --color-intermediate-content: 245 246 246;
+      --color-intermediate-content-dimmed: 172 174 175;
+
+      --color-button: 245 246 246;
+      --color-button-content: 38 40 43;
+
+      --color-button-dimmed: 96 98 101;
+      --color-button-dimmed-content: 255 255 255;
+    }
+  </style>
+
+  <script>
+    // Prevent iframe hijacking
+    this.top.location !== this.location && (this.top.location = this.location);
+
+    if ('collapsed' in localStorage) {
+      document.documentElement.dataset.collapsed = true;
+    }
+  </script>
+
+  <script>
+    let scheme = {
+      ...{
+        modes: ['light', 'dark'],
+        default: 'system',
+      },
+      ...JSON.parse(document.documentElement.dataset.colorScheme),
+    };
+
+    if (scheme.modes.length > 1) {
+      if (!('mode' in localStorage) || scheme.modes.indexOf(localStorage.mode) === -1) {
+        if (scheme.default === 'system') {
+          localStorage.mode = window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        } else {
+          localStorage.mode = scheme.default;
+        }
+      }
+    } else if (scheme.modes.length === 1) {
+      localStorage.mode = scheme.modes[0];
+    } else {
+      localStorage.mode = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+    }
+
+    document.documentElement.dataset.mode = localStorage.mode;
+  </script>
+
+  <script>
+    window.locale = {
+      messages: {
+        'An unexpected error occurred! Please try again later!': '{{ __("An unexpected error occurred! Please try again later!")|e("js") }}',
+        'Category has been updated successfully!': '{{ __("Category has been updated successfully!")|e("js") }}',
+        'Category has been created successfully!': '{{ __("Category has been created successfully!")|e("js") }}',
+        'Plan has been updated successfully!': '{{ __("Plan has been updated successfully!")|e("js") }}',
+        'Plan has been created successfully!': '{{ __("Plan has been created successfully!")|e("js") }}',
+        'Template has been updated successfully!': '{{ __("Template has been updated successfully!")|e("js") }}',
+        'Template has been created successfully!': '{{ __("Template has been created successfully!")|e("js") }}',
+        'Changes saved successfully!': '{{ __("Changes saved successfully!")|e("js") }}',
+        'Cache cleared successfully!': '{{ __("Cache cleared successfully!")|e("js") }}',
+        'User has been updated successfully!': '{{ __("User has been updated successfully!")|e("js") }}',
+        'User has been created successfully!': '{{ __("User has been created successfully!")|e("js") }}',
+        'Email sent successfully!': '{{ __("Email sent successfully!")|e("js") }}',
+        'You have run out of credits. Please purchase more credits to continue using the app.': '{{ __("You have run out of credits. Please purchase more credits to continue using the app.")|e("js") }}',
+        'Document copied to clipboard!': '{{ __("Document copied to clipboard!")|e("js") }}',
+        'Document saved successfully!': '{{ __("Document saved successfully!")|e("js") }}',
+        'Document deleted successfully!': '{{ __("Document deleted successfully!")|e("js") }}',
+        'Subscription cancelled!': '{{ __("Subscription cancelled!")|e("js") }}',
+        'Document has been updated successfully!': '{{ __("Document has been updated successfully!")|e("js") }}',
+        'Image copied to clipboard!': '{{ __("Image copied to clipboard!")|e("js") }}',
+        'Authentication failed! Please check your credentials and try again!': '{{ __("Authentication failed! Please check your credentials and try again!")|e("js") }}',
+        'Click to copy': '{{ __("Click to copy")|e("js") }}',
+        'Copied to clipboard': '{{ __("Copied to clipboard")|e("js") }}',
+        'Resource UUID is copied to the clipboard.': '{{ __("Resource UUID is copied to the clipboard.")|e("js") }}',
+        'Workspace name updated!': '{{ __("Workspace name updated!")|e("js") }}',
+        'You\'ve been added to the :name workspace!': '{{ __("You\'ve been added to the :name workspace!")|e("js") }}',
+        'Your card number is incomplete.': '{{ __("Your card number is incomplete.")|e("js") }}',
+        'Invalid card number': '{{ __("Invalid card number")|e("js") }}',
+        'Your card\'s security code is incomplete.': '{{ __("Your card\'s security code is incomplete.")|e("js") }}',
+        'Your card\'s security code is invalid.': '{{ __("Your card\'s security code is invalid.")|e("js") }}',
+        'Your card\'s expiration date is incomplete.': '{{ __("Your card\'s expiration date is incomplete.")|e("js") }}',
+        'Your card\'s expiration date is invalid.': '{{ __("Your card\'s expiration date is invalid.")|e("js") }}',
+      },
+    }
+
+    document.cookie = `locale={{ locale }}; expires=${new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 365).toGMTString()}; path=/`
+  </script>
+
+  <script type="">
+    window.state = {
+      user: {{ user is defined ? user | json_encode | raw : '{}' }},
+      workspace: {{ workspace is defined ? workspace | json_encode | raw : '{}' }},
+    };
+  </script>
+
+  <title>
+    {% block title %}{% endblock %}
+    {{ block('title') is not empty and option.site.name is defined and option.site.name ? ' | ' : '' }}
+    {{ option.site.name ?? null }}
+  </title>
+</head>
+
+<body
+  class="bg-main text-content max-h-screen font-content data-[modal]:overflow-hidden data-[modal]:pr-[var(--scrollbar-width)] group/body"
+  x-data='{{ xdata is defined ? xdata : "" }}'>
+  {% include "snippets/script-tags/body.twig" %}
+
+  <toast-message
+    class="{{ view_namespace in ['app', 'admin'] ? 'ml-[7.5rem]' : '' }} fixed left-1/2 z-50 -bottom-20 opacity-0 invisible data-[open]:bottom-12 mb-1 data-[open]:opacity-100 data-[open]:visible flex items-center gap-3 rounded-lg -translate-x-1/2 px-4 py-3 bg-content text-main transition-all group/toast max-w-[28rem]">
+  </toast-message>
+
+  {% block layout %}{% endblock %}
+
+  <script src="assets/base.js?v={{ version }}"></script>
+  {% block scripts %}{% endblock %}
+
+  {% include "snippets/script-tags/end.twig" %}
+</body>
+
+</html>

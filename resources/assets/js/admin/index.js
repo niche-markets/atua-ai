@@ -1,0 +1,44 @@
+`use strict`;
+
+import Alpine from 'alpinejs';
+import mask from '@alpinejs/mask'
+import Tooltip from "@ryangjchandler/alpine-tooltip";
+
+import { listView } from './list.js';
+import { presetView } from './preset.js';
+import { userView } from './user.js';
+import { categoryView } from './category.js';
+import { planView } from './plan.js';
+import { settingsView } from './settings.js';
+import { pluginsView } from './plugins.js';
+import { pluginView } from './plugin.js';
+import { workspaceView } from './workspace.js';
+import { subscriptionView } from './subscription.js';
+import { planSnapshowView } from './plan-snapshot.js';
+import { dashboardView } from './dashboard.js';
+import { updateView } from './update.js';
+import { assistantView } from './assistant.js';
+import { voiceView } from './voice.js';
+
+// Load views
+listView();
+
+dashboardView();
+presetView();
+userView();
+workspaceView();
+categoryView();
+planView();
+pluginsView();
+pluginView();
+subscriptionView();
+planSnapshowView();
+settingsView();
+updateView();
+assistantView();
+voiceView();
+
+// Call after views are loaded
+Alpine.plugin(mask);
+Alpine.plugin(Tooltip.defaultProps({ arrow: false }));
+Alpine.start();

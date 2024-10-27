@@ -1,0 +1,274 @@
+<template x-if="{{ ref }}">
+  <div class="flex items-start gap-2 message group/message"
+    :data-id="{{ ref }}.id" x-data="{ editing: false }">
+    <div
+      :class="{{ ref }}.id == 'temp' && isProcessing ? 'animate-pulse' : null">
+      <template x-if="{{ ref }}.role == 'user' && {{ ref }}.user">
+        <div class="avatar avatar-sm">
+          <span
+            x-text="`${ {{ ref }}.user.first_name} ${ {{ ref }}.user.last_name}`.match(/(\b\S)?/g).join('').slice(0, 2)"></span>
+
+          <template x-if="{{ ref }}.user.avatar">
+            <img :src="{{ ref }}.user.avatar"
+              :alt="`${ {{ ref }}.user.first_name} ${ {{ ref }}.user.last_name}`">
+          </template>
+        </div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'user' && !{{ ref }}.user">
+        <div class="avatar avatar-sm">
+          <i class="ti ti-question-mark"></i>
+        </div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'assistant'  && {{ ref }}.assistant">
+        <div class="avatar avatar-sm">
+          <template x-if="{{ ref }}.assistant.avatar">
+            <img :src="{{ ref }}.assistant?.avatar"
+              :alt="{{ ref }}.assistant?.name">
+          </template>
+
+          <template x-if="!{{ ref }}.assistant.avatar">
+            <i class="ti ti-box"></i>
+          </template>
+        </div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'assistant'  && !{{ ref }}.assistant">
+        <div class="avatar avatar-sm">
+          {% if option.features.chat.avatar is defined and option.features.chat.avatar %}
+          <img src="{{ option.features.chat.avatar }}"
+            alt="{{ option.features.chat.name ?? 'AI' }}{{ option.features.chat.name ?? 'AI' }}">
+          {% else %}
+          <i class="ti ti-sparkles"></i>
+          {% endif %}
+        </div>
+      </template>
+    </div>
+
+    <div class="flex flex-col gap-2 grow">
+      <template x-if="{{ ref }}.role == 'user' && {{ ref }}.user">
+        <div class="font-bold"
+          x-text="`${ {{ ref }}.user.first_name} ${ {{ ref }}.user.last_name}`">
+        </div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'user' && !{{ ref }}.user">
+        <div class="font-bold text-content-dimmed">
+          {{ __('Deleted user') }}</div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'assistant' && {{ ref }}.assistant">
+        <div class="font-bold" x-text="{{ ref }}.assistant.name">
+        </div>
+      </template>
+
+      <template x-if="{{ ref }}.role == 'assistant' && !{{ ref }}.assistant">
+        <div class="font-bold">
+          {{ option.features.chat.name ?? 'AI' }}
+        </div>
+      </template>
+
+      <template x-if="editing">
+        <form @submit.prevent="edit({{ ref }}, content); editing=false"
+          x-data="{content: {{ ref }}.content}">
+          <div
+            class="overflow-y-auto autogrow-textarea text-content grow max-h-36 font-primary"
+            :data-replicated-value="content">
+            <textarea autocomplete="off" rows="1" x-model="content"
+              class="block p-0 text-base bg-transparent border-none placeholder:text-content-dimmed"
+              required x-ref="content" x-init="$el.focus()"></textarea>
+          </div>
+
+          <div class="flex items-center gap-2 mt-5">
+            <button type="submit" :disabled="isProcessing"
+              class="button button-xs">
+              {{ p__('button', 'Submit') }}
+            </button>
+
+            <button @click="editing=false" type="button"
+              class="button button-xs button-outline">
+              {{ p__('button', 'Cancel') }}
+            </button>
+          </div>
+        </form>
+      </template>
+
+      <template x-if="call && {{ ref }}.id == 'temp'">
+        <div>
+          <template x-if="call.name == 'web_scrap'">
+            <div class="tool-processing">
+              <span>
+                {{ __('Scanning the web site...') }}
+              </span>
+            </div>
+          </template>
+
+          <template x-if="call.name == 'google_search'">
+            <div class="tool-processing">
+              <template x-if="call?.params?.query">
+                <span>
+                  {% set query %}
+                  <span x-text="call?.params?.query"></span>
+                  {% endset %}
+
+                  {{ __('Searching "%s" on Google...', query)|raw }}
+                </span>
+              </template>
+
+              <template x-if="!call?.params?.query">
+                <span>
+                  {{ __('Searching on Google...') }}
+                </span>
+              </template>
+            </div>
+          </template>
+
+          <template x-if="call.name == 'web_search'">
+            <div class="tool-processing">
+              <template x-if="call?.params?.query">
+                <span>
+                  {% set query %}
+                  <span x-text="call?.params?.query"></span>
+                  {% endset %}
+
+                  {{ __('Searching "%s" on the web...', query)|raw }}
+                </span>
+              </template>
+
+              <template x-if="!call?.params?.query">
+                <span>
+                  {{ __('Searching on the web...') }}
+                </span>
+              </template>
+            </div>
+          </template>
+        </div>
+      </template>
+
+      <template x-if="!editing && {{ ref }}.quote">
+        <div class="flex items-start gap-1 text-sm text-content-dimmed">
+          <i class="text-sm ti ti-corner-down-right"></i>
+
+          <div class="grow" x-text="{{ ref }}.quote"></div>
+        </div>
+      </template>
+
+      <template x-if="!editing && {{ ref }}.image">
+        <div class="flex">
+          <a :href="{{ ref }}.image.url"
+            class="flex items-center gap-2 p-2 pr-4 box min-w-72 hover:border-line"
+            download>
+            <div class="w-10 h-10">
+              <img :src="{{ ref }}.image.url" width="{{ ref }}.image.width"
+                height="{{ ref }}.height.width" alt=""
+                class="object-cover object-center w-full h-full rounded-lg">
+            </div>
+
+            <div>
+              <div class="text-sm font-bold">{{ __('Image file') }}</div>
+              <div class="text-xs text-content-dimmed mt-0.5">
+                <span class="uppercase"
+                  x-text="{{ ref }}.image.extension"></span>
+                ·
+                <span>
+                  <span x-text="{{ ref }}.image.width">1024</span>
+                  x
+                  <span x-text="{{ ref }}.image.height">1024</span>
+                </span>
+              </div>
+            </div>
+
+            <i class="ml-auto ti ti-download text-content-dimmed"></i>
+          </a>
+        </div>
+      </template>
+
+      <template x-if="!editing">
+        <div class="content selection:bg-accent/50"
+          @mouseup="{{ ref }}.role == 'assistant' ? textSelect : null">
+          <x-markdown :content="{{ ref }}.content"></x-markdown>
+        </div>
+      </template>
+
+      <template x-if="!editing">
+        <div class="flex items-center gap-4 mt-2 text-sm text-content-dimmed">
+          <div class="flex items-center gap-2">
+            <button @click="copy({{ ref }})"
+              class="transition-all hover:text-content"
+              x-tooltip.raw="{{ __('Copy') }}">
+              <i class="text-xl ti ti-copy"></i>
+            </button>
+
+            <template x-if="{{ ref }}.role == 'assistant' && {{ ref }}.id">
+              <button @click="regenerate({{ ref }})"
+                class="transition-all hover:text-content"
+                x-tooltip.raw="{{ __('Regenerate') }}">
+                <i class="text-xl ti ti-refresh"></i>
+              </button>
+            </template>
+
+            <template
+              x-if="{{ ref }}.role == 'user' && {{ ref }}.id && !{{ ref }}.image">
+              <button @click="editing=true"
+                class="transition-all hover:text-content"
+                x-tooltip.raw="{{ __('Edit') }}">
+                <i class="text-xl ti ti-pencil"></i>
+              </button>
+            </template>
+
+            <template x-if="{{ ref }}.role == 'assistant' && {{ ref }}.id">
+              <div class="relative"
+                @click.outside="$refs.context.removeAttribute('data-open')">
+
+                <button @click="$refs.context.toggleAttribute('data-open')"
+                  class="transition-all hover:text-content"
+                  x-tooltip.raw="{{ __('Change model') }}">
+                  <i class="text-xl ti ti-sparkles"></i>
+                </button>
+
+                <div class="menu menu-tr" x-ref="context">
+                  <ul>
+                    <template x-for="a in adapters">
+                      <li>
+                        <button type="button"
+                          class="w-full px-4 py-2 text-xs text-left blockl hover:bg-intermediate hover:text-intermediate-content"
+                          @click="regenerate({{ ref }}, a.model); $refs.context.removeAttribute('data-open')">
+
+                          <span x-text="a.name"></span>
+                        </button>
+                      </li>
+                    </template>
+                  </ul>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <div
+            class="flex items-center gap-2 px-2 py-px transition-all border rounded-lg opacity-0 border-line-dimmed group-hover/message:opacity-100 group-hover/message:delay-200">
+            <template x-if="{{ ref }}.role == 'assistant' && {{ ref }}.model">
+              <span class="flex items-center gap-1">
+                <i class="text-base ti ti-cpu"></i>
+                <span
+                  x-text="adapters.find(adapter => adapter.model == {{ ref }}.model)?.short_name || {{ ref }}.model"></span>
+              </span>
+            </template>
+
+            <template x-if="{{ ref }}.content.length > 0">
+              <span class="flex items-center gap-1">
+                {% set count %}
+                <span x-text="{{ ref }}.content.length">
+                </span>
+                {% endset %}
+
+                <i class="text-base ti ti-square-rounded-letter-t"></i>
+                {{ __(":count chars", {':count': count})|raw }}
+              </span>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+</template>

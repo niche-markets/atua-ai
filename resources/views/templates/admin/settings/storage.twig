@@ -1,0 +1,62 @@
+{% extends "/layouts/main.twig" %}
+{% set active_menu = 'settings' %}
+
+{% set xdata = 'settings' %}
+{% block title p__('title', 'Storage settings')|title %}
+
+{% block template %}
+<div>
+  {% include "snippets/back.twig" with {link: 'admin/settings', label: 'Settings'} %}
+
+  <h1 class="mt-4">{{ p__('heading', 'Storage settings') }}</h1>
+</div>
+
+<x-form>
+  <form class="flex flex-col gap-8" @submit.prevent="submit" x-ref="form">
+    <div class="flex flex-col gap-2">
+      <section class="grid gap-6 box" data-density="comfortable">
+        <h2>{{ p__('heading', 'CDN') }}</h2>
+
+        <div>
+          <label for="cdn.adapter">
+            {{ p__('label', 'Adapter') }}
+          </label>
+
+          <select id="cdn.adapter" name="cdn[adapter]" class="mt-2 input">
+            {% for key, adapter in cdn_adapters %}
+            <option value="{{ key }}"
+              {{ option.cdn.adapter is defined and option.cdn.adapter == key ? 'selected' : '' }}>
+              {{ adapter.name }}
+            </option>
+            {% endfor %}
+          </select>
+
+          <ul
+            class="m-3 mb-0 text-xs list-disc list-inside text-content-dimmed">
+            <li>
+              {{ __('Switching CDN adapter won\'t synchronize current files.') }}
+            </li>
+
+            <li>
+              {{ __('Selected adapter must be enabled') }}
+            </li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <div class="flex justify-end gap-4">
+      <a href="admin/settings" class="button button-outline">
+        {{ p__('button', 'Cancel') }}
+      </a>
+
+      <button type="submit" class="button button-accent"
+        :processing="isProcessing">
+        {% include "/snippets/spinner.twig" %}
+
+        {{ p__('button', 'Save changes') }}
+      </button>
+    </div>
+  </form>
+</x-form>
+{% endblock %}

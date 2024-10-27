@@ -1,0 +1,58 @@
+{% from "/macros/avatar.twig" import preset_avatar %}
+
+{% if placeholder is defined %}
+<div class="relative flex flex-col gap-6 box hover:border-line"
+  data-starred="false">
+
+  <div class="flex items-center justify-between avatar">
+    <div class="w-10 h-10 rounded-ful loading">
+    </div>
+  </div>
+
+  <div>
+    <div class="w-16 h-6 loading"></div>
+    <div class="h-4 mt-2 loading"></div>
+    <div class="h-4 mt-1 mr-3 loading"></div>
+    <div class="w-1/2 h-4 mt-1 loading"></div>
+  </div>
+
+  <div class="flex flex-col gap-6 mt-auto">
+    <div class="flex items-center gap-2">
+      <span class="w-10 h-5 py-1 loading"></span>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="flex flex-col gap-6 box hover:border-line">
+
+  <div class="avatar">
+    <template x-if="assistant.avatar">
+      <img :src="assistant.avatar" :alt="assistant.name">
+    </template>
+
+    <template x-if="!assistant.avatar">
+      <i class="ti ti-box"></i>
+    </template>
+  </div>
+
+  <div>
+    <h3 class="font-bold" x-text="assistant.name"></h3>
+
+    <template x-if="assistant.expertise">
+      <div class="mt-1 text-sm text-content-dimmed"
+        x-text="assistant.expertise">
+      </div>
+    </template>
+  </div>
+
+  <template x-if="assistant.description">
+    <p class="text-sm text-content-dimmed" x-text="assistant.description">
+    </p>
+  </template>
+
+  <a :href="`app/chat/${assistant.id}`"
+    class="w-full mt-auto button button-dimmed">
+    {{ p__('button', 'Start conversation') }}
+  </a>
+</div>
+{% endif %}

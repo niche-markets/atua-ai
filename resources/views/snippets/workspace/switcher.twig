@@ -1,0 +1,130 @@
+{% if view_namespace == 'app' %}
+<modal-element name="workspace-switch" x-data="workspace">
+  <div class="modal">
+    <div class="p-8 rounded-xl bg-main w-[480px]">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl">{{ p__('heading', 'Your workspaces') }}</h2>
+
+        <button
+          class="flex items-center justify-center w-8 h-8 border border-transparent rounded-full bg-line-dimmed hover:border-line"
+          @click="modal.close()" type="button">
+          <i class="text-xl ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="mt-4 -mx-4">
+        <div class="flex items-center w-full gap-3 p-4">
+          <div class="avatar">
+            {{ workspace.name|slice(0, 1) }}
+          </div>
+
+          <div class="max-w-[180px] whitespace-nowrap">
+            <div class="overflow-hidden font-semibold text-ellipsis">
+              {{ workspace.name }}
+            </div>
+
+            {% if user.subscription %}
+            <div
+              class="overflow-hidden text-xs text-content-dimmed text-ellipsis">
+              {{ user.subscription.plan.title }}
+            </div>
+            {% endif %}
+          </div>
+
+          <span class="ml-auto badge badge-success">
+            {{ p__('badge', 'Selected') }}
+          </span>
+        </div>
+
+        {% for ws in user.owned_workspaces|merge(user.workspaces) %}
+        {% if ws.id != user.workspace.id %}
+        <button
+          class="flex items-center w-full gap-3 p-4 text-left border border-transparent group rounded-xl hover:border-line-dimmed disabled:pointer-events-none disabled:opacity-50"
+          @click="switchWorkspace(`{{ ws.id }}`)" type="button"
+          :disabled="isSwithcing != null">
+          <div class="avatar">
+            {{ ws.name|slice(0, 1) }}
+          </div>
+
+          <div class="max-w-[180px] whitespace-nowrap">
+            <div class="overflow-hidden font-semibold text-ellipsis">
+              {{ ws.name }}
+            </div>
+
+            {% if user.subscription %}
+            <div
+              class="overflow-hidden text-xs text-content-dimmed text-ellipsis">
+              {{ user.subscription.plan.title }}
+            </div>
+            {% endif %}
+          </div>
+
+          <template x-if="isSwithcing == null">
+            <span class="hidden ml-auto badge group-hover:flex">
+              <i class="ti ti-switch-horizontal"></i>
+
+              {{ p__('button', 'Switch') }}
+            </span>
+          </template>
+
+          <template x-if="isSwithcing == `{{ ws.id }}`">
+            <span class="ml-auto">
+              {% include "/snippets/spinner.twig" %}
+            </span>
+          </template>
+        </button>
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="mt-8">
+        <button class="w-full button button-accent" type="button"
+          @click="modal.open('new-workspace')">
+          <i class="ti ti-plus"></i>
+
+          {{ p__('button', 'Add new workspace') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</modal-element>
+
+<modal-element name="new-workspace" x-data="workspace">
+  <x-form>
+    <form class="modal" @submit.prevent="create($refs.name.value)">
+      <div class="p-8 rounded-xl bg-main w-[480px] flex flex-col gap-8">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl">{{ p__('heading', 'New workspace') }}</h2>
+
+          <button
+            class="flex items-center justify-center w-8 h-8 border border-transparent rounded-full bg-line-dimmed hover:border-line"
+            @click="modal.close()" type="button">
+            <i class="text-xl ti ti-x"></i>
+          </button>
+        </div>
+
+        <div>
+          <label
+            for="new-workspace-name">{{ p__('label', 'Workspace name') }}</label>
+          <input type="text" class="mt-2 input" id="new-workspace-name" required
+            x-ref="name">
+        </div>
+
+        <div class="flex justify-end gap-4">
+          <button type="button" class="button button-outline"
+            @click="modal.close()" type="button">
+            {{ p__('button', 'Cancel') }}
+          </button>
+
+          <button type="submit" class="button button-accent"
+            :processing="isProcessing">
+            {% include "/snippets/spinner.twig" %}
+
+            {{ p__('button', 'Create workspace') }}
+          </button>
+        </div>
+      </div>
+    </form>
+  </x-form>
+</modal-element>
+{% endif %}
